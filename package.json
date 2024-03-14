@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "gsap": "^3.12.4",
-    "pixi-svg": "^3.2.0",
-    "pixi.js": "^7.3.3"
+    "pixi.js": "^8.0.1"
   }
 }

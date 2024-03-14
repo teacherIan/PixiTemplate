@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import * as PIXI from 'pixi.js';
-import { Container, Graphics, Sprite, Ticker } from 'pixi.js';
+import { Container, Graphics, Sprite } from 'pixi.js';
 import { IScene } from './Manager';
 import { Manager } from './Manager';
 import { PixiPlugin } from 'gsap/PixiPlugin';
@@ -12,9 +12,10 @@ export class SceneA extends Container implements IScene {
   private spriteArray: Sprite[];
   private squareWidth: number;
   private squareHeight: number;
-  private amtSquaresX: number = 30;
-  private amtSquaresY: number = 30;
+  private amtSquaresX: number = 60;
+  private amtSquaresY: number = 60;
   private graphicsSquare: Graphics;
+  private spriteScale: number = 1.1;
 
   private colorArray = [
     0xb9fbc0, 0x98f5e1, 0x8eecf5, 0x90dbf4, 0xcfbaf0, 0xf1c0e8, 0xffcfd2,
@@ -23,6 +24,7 @@ export class SceneA extends Container implements IScene {
 
   constructor() {
     super();
+
     const texture = PIXI.Assets.get('/icons/pixijs-icon.svg');
     const backgroundSprite = new Sprite(texture);
     backgroundSprite.anchor.set(0.5, 0.5);
@@ -33,19 +35,16 @@ export class SceneA extends Container implements IScene {
     this.squareWidth = Manager.width / this.amtSquaresX;
     this.squareHeight = Manager.height / this.amtSquaresY;
 
-    this.graphicsSquare = new Graphics();
-    this.graphicsSquare.beginFill(0xffffff);
-    this.graphicsSquare.drawRect(0, 0, this.squareWidth, this.squareHeight);
-    this.graphicsSquare.endFill();
-
-    Ticker.shared.add(this.update, this);
+    this.graphicsSquare = new Graphics()
+      .rect(0, 0, this.squareWidth, this.squareHeight)
+      .fill(0xffffff);
 
     for (let i = 0; i < this.amtSquaresX; i++) {
       for (let j = 0; j < this.amtSquaresY; j++) {
         this.createSpriteSquare(i * this.squareWidth, j * this.squareHeight);
       }
     }
-
+    //start animations
     this.animationController();
     this.animationController();
   }
@@ -55,17 +54,14 @@ export class SceneA extends Container implements IScene {
       Manager.getApp.renderer.generateTexture(this.graphicsSquare)
     );
     sprite.tint = 0xea1e62;
-    sprite.scale.set(1.01);
+    sprite.scale.set(this.spriteScale);
     sprite.position.set(x, y);
     this.spriteArray.push(sprite);
     this.addChild(sprite);
   }
 
   createGraphicsSquare(width: number, height: number, x: number, y: number) {
-    const square = new Graphics();
-    square.beginFill(0xff0000);
-    square.drawRect(x, y, width, height);
-    square.endFill();
+    const square = new Graphics().rect(x, y, width, height).fill(0xff0000);
     this.addChild(square);
   }
 
@@ -105,6 +101,7 @@ export class SceneA extends Container implements IScene {
       .to(this.spriteArray, {
         pixi: {
           rotation: 1080,
+          scale: this.spriteScale,
         },
         stagger: {
           amount: 5,
@@ -157,7 +154,7 @@ export class SceneA extends Container implements IScene {
     });
     tl.to(this.spriteArray, {
       pixi: {
-        scale: 1,
+        scale: this.spriteScale,
         rotation: 360,
       },
       stagger: {
@@ -171,6 +168,5 @@ export class SceneA extends Container implements IScene {
   }
 
   resize(): void {}
-
-  update(deltaTime: number) {}
+  update() {}
 }

@@ -1,4 +1,4 @@
-import { Application, DisplayObject } from 'pixi.js';
+import { Application, Container, Ticker } from 'pixi.js';
 
 export class Manager {
   private constructor() {}
@@ -24,8 +24,10 @@ export class Manager {
     return this.app;
   }
 
-  public static initialize(): void {
-    Manager.app = new Application({
+  public static async initialize(): Promise<void> {
+    Manager.app = new Application();
+
+    await Manager.app.init({
       resizeTo: window,
       view: document.getElementById('app') as HTMLCanvasElement,
       resolution: window.devicePixelRatio || 1,
@@ -34,11 +36,14 @@ export class Manager {
       backgroundAlpha: 0,
       powerPreference: 'high-performance',
       antialias: true,
+      hello: true,
     });
 
-    Manager.app.ticker.add(Manager.update);
-
     window.addEventListener('resize', Manager.resize);
+
+    Ticker.shared.add((ticker) => {
+      Manager.update(ticker.deltaTime);
+    });
   }
 
   public static changeScene(newScene: IScene): void {
@@ -64,7 +69,7 @@ export class Manager {
   }
 }
 
-export interface IScene extends DisplayObject {
+export interface IScene extends Container {
   update(framesPassed: number): void;
   resize(screenWidth: number, screenHeight: number): void;
 }
