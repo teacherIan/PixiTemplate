@@ -28,6 +28,7 @@ export class Manager {
     Manager.app = new Application();
 
     await Manager.app.init({
+      preference: 'webgpu',
       resizeTo: window,
       view: document.getElementById('app') as HTMLCanvasElement,
       resolution: window.devicePixelRatio || 1,
